@@ -8,4 +8,4 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **authentication:** use exist API data, add tests ([d39d8af](https://github.com/jsDotCr/zapier-fitbit/commit/d39d8af))
+* **authentication:** use exist API data, add tests ([d39d8af](https://github.com/jsDotCr/zapier-exist.io/commit/d39d8af))
