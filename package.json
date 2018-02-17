@@ -1,0 +1,30 @@
+{
+  "name": "zapier-exist.io",
+  "version": "0.0.0",
+  "description": "Fitbit app for the Zapier platform.",
+  "repository": "https://github.com/jsDotCr/zapier-fitbit",
+  "homepage": "https://github.com/jsDotCr/zapier-fitbit",
+  "author": "Rò <rocco@js.cr>",
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --recursive",
+    "validate": "zapier validate",
+    "prerelease": "npm test && npm run validate",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags origin master && zapier push"
+  },
+  "engines": {
+    "node": "6.10.2",
+    "npm": ">=3.10.10"
+  },
+  "dependencies": {
+    "zapier-platform-core": "4.3.2"
+  },
+  "devDependencies": {
+    "mocha": "3.2.0",
+    "nock": "9.1.6",
+    "should": "11.2.1",
+    "standard-version": "4.3.0"
+  }
+}
