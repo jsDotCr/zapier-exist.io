@@ -1,4 +1,5 @@
 const authentication = require('./authentication')
+const BodyFatCreate = require('./creates/bodyFat')
 
 const includeBearerToken = (request, z, bundle) => {
   if (bundle.authData.access_token) {
@@ -14,7 +15,7 @@ const App = {
   authentication: authentication,
 
   beforeRequest: [
-    includeBearerToken
+    includeBearerToken,
   ],
 
   afterResponse: [
@@ -30,7 +31,8 @@ const App = {
   },
 
   creates: {
-  }
-};
+    [BodyFatCreate.key]: BodyFatCreate,
+  },
+}
 
-module.exports = App;
+module.exports = App
