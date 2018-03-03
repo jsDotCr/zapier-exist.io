@@ -1,3 +1,9 @@
+function handleFetchAccessTokenError (status, content) {
+  if (status !== 200) {
+    throw new Error('Unable to fetch access token: ' + content)
+  }
+}
+
 const getAccessToken = (z, bundle) => {
   const promise = z.request(`https://exist.io/oauth2/access_token`, {
     method: 'POST',
@@ -14,9 +20,7 @@ const getAccessToken = (z, bundle) => {
   })
 
   return promise.then((response) => {
-    if (response.status !== 200) {
-      throw new Error('Unable to fetch access token: ' + response.content)
-    }
+    handleFetchAccessTokenError(response.status, response.content)
     return JSON.parse(response.content)
   })
 }
@@ -36,10 +40,7 @@ const refreshAccessToken = (z, bundle) => {
   })
 
   return promise.then((response) => {
-    if (response.status !== 200) {
-      throw new Error('Unable to fetch access token: ' + response.content)
-    }
-
+    handleFetchAccessTokenError(response.status, response.content)
     return JSON.parse(response.content)
   })
 }
