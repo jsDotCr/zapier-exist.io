@@ -1,9 +1,9 @@
-function isAttributeOwned(name, {
-  z,
+function isAttributeOwned (name, {
+  z
 }) {
   return z.request({
     method: 'GET',
-    url: 'https://exist.io/api/1/attributes/owned/',
+    url: 'https://exist.io/api/1/attributes/owned/'
   })
     .then(response => z.JSON.parse(response.content))
     .then(attributesOwned => {
@@ -12,12 +12,12 @@ function isAttributeOwned(name, {
       if (attribute.length === 1) {
         return attribute
       }
-      throw new Error(`We don\'t have ownership of ${name}`)
+      throw new Error(`We don't have ownership of ${name}`)
     })
 }
 
-function acquireAttribute(name, {
-  z,
+function acquireAttribute (name, {
+  z
 }) {
   return z.request({
     method: 'POST',
@@ -28,7 +28,7 @@ function acquireAttribute(name, {
     body: JSON.stringify([{
       name,
       active: true
-    }]),
+    }])
   })
     .then(response => {
       if (response.status >= 400) {
@@ -42,8 +42,8 @@ function acquireAttribute(name, {
     })
 }
 
-function updateAttribute(name, date, value, {
-  z,
+function updateAttribute (name, date, value, {
+  z
 }) {
   return z.request({
     method: 'POST',
@@ -54,19 +54,22 @@ function updateAttribute(name, date, value, {
     body: JSON.stringify([{
       name,
       date,
-      value,
-    }]),
+      value
+    }])
   })
     .then(response => {
-      const { success, failed } = z.JSON.parse(response.content)
-      if (failed) {
-        throw new Error(`Could not update ${name} because ${failed[0].error}, error code ${failed[0].error_code}`)
+      if (response.status >= 400) {
+        throw new Error(`Could not update attribute ${name} because ${response.content}`)
       }
-      return success[0]
+      const content = z.JSON.parse(response.content)
+      if (response.status === 202) {
+        throw new Error(`Could not update attribute ${name} because ${content.failed[0].error}. Error code: ${content.failed[0].error_code}`)
+      }
+      return content.success[0]
     })
 }
 
-exports.update = function updateAttributeChain({
+exports.update = function updateAttributeChain ({
   name,
   date,
   value,
@@ -75,8 +78,5 @@ exports.update = function updateAttributeChain({
 }) {
   return isAttributeOwned(name, { z })
     .catch(() => acquireAttribute(name, { z }))
-    .then((o) => {
-      console.log(15, o)
-      updateAttribute(name, date, value, { z })
-    })
+    .then(() => updateAttribute(name, date, value, { z }))
 }
