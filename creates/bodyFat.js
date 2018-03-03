@@ -26,7 +26,7 @@ module.exports = {
         label: 'Date',
         helpText: 'Measurement date using the format "YYYY-MM-DD"',
         placeholder: '2018-02-17',
-        type: 'datetime',
+        type: 'string',
         required: true
       },
       {
