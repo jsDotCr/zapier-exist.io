@@ -15,7 +15,7 @@ const App = {
   authentication: authentication,
 
   beforeRequest: [
-    includeBearerToken,
+    includeBearerToken
   ],
 
   afterResponse: [
@@ -31,8 +31,8 @@ const App = {
   },
 
   creates: {
-    [BodyFatCreate.key]: BodyFatCreate,
-  },
+    [BodyFatCreate.key]: BodyFatCreate
+  }
 }
 
 module.exports = App
