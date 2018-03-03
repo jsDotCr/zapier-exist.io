@@ -1,9 +1,26 @@
+const apiRoot = 'https://exist.io/api/1/attributes'
+
+function getApiUrl (method) {
+  return `${apiRoot}/${method}/`
+}
+
+function postRequestObject (url, body) {
+  return {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    url: getApiUrl(url),
+    body: JSON.stringify(body)
+  }
+}
+
 function isAttributeOwned (name, {
   z
 }) {
   return z.request({
     method: 'GET',
-    url: 'https://exist.io/api/1/attributes/owned/'
+    url: getApiUrl('owned')
   })
     .then(response => z.JSON.parse(response.content))
     .then(attributesOwned => {
@@ -19,17 +36,12 @@ function isAttributeOwned (name, {
 function acquireAttribute (name, {
   z
 }) {
-  return z.request({
-    method: 'POST',
-    url: 'https://exist.io/api/1/attributes/acquire/',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify([{
+  return z.request(
+    postRequestObject('acquire', [{
       name,
       active: true
     }])
-  })
+  )
     .then(response => {
       if (response.status >= 400) {
         throw new Error(`Could not acquire ownership of attribute ${name} because ${response.content}`)
@@ -45,18 +57,13 @@ function acquireAttribute (name, {
 function updateAttribute (name, date, value, {
   z
 }) {
-  return z.request({
-    method: 'POST',
-    url: 'https://exist.io/api/1/attributes/update/',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify([{
+  return z.request(
+    postRequestObject('update', [{
       name,
       date,
       value
     }])
-  })
+  )
     .then(response => {
       if (response.status >= 400) {
         throw new Error(`Could not update attribute ${name} because ${response.content}`)
