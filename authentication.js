@@ -6,7 +6,7 @@ const getAccessToken = (z, bundle) => {
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
       grant_type: 'authorization_code',
-      redirect_uri: bundle.inputData.redirect_uri,
+      redirect_uri: bundle.inputData.redirect_uri
     },
     headers: {
       'content-type': 'application/x-www-form-urlencoded'
@@ -47,7 +47,7 @@ const refreshAccessToken = (z, bundle) => {
 const testAuth = (z) => {
   const promise = z.request({
     method: 'GET',
-    url: `https://exist.io/api/1/users/\$self/today/`,
+    url: 'https://exist.io/api/1/users/$self/today/'
   })
 
   return promise.then((response) => {
@@ -67,7 +67,7 @@ module.exports = {
         client_id: '{{process.env.CLIENT_ID}}',
         redirect_uri: '{{bundle.inputData.redirect_uri}}',
         response_type: 'code',
-        scope: 'read+write',
+        scope: 'read+write'
       }
     },
     getAccessToken: getAccessToken,
