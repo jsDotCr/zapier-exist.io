@@ -35,7 +35,7 @@ module.exports = {
       {
         key: 'date',
         label: 'Date',
-        helpText: 'Measurement date using the format "YYYY-MM-DD"',
+        helpText: 'Measurement date (can also be a full ISO date(time), an RFC2822-compliant string, or a Unix timestamp: it will be converted in exist.io\'s format "YYYY-MM-DD" for you)',
         placeholder: '2018-02-17',
         type: 'string',
         required: true
@@ -43,7 +43,7 @@ module.exports = {
       {
         key: 'value',
         type: 'number',
-        label: 'Measurement',
+        label: 'Measurement value',
         helpText: 'Body fat % - Decimals allowed',
         placeholder: '15.4',
         required: true
