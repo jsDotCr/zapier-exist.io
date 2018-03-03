@@ -1,9 +1,9 @@
-/* globals describe it */
-const should = require('should')
+/* globals describe it before */
 const zapier = require('zapier-platform-core')
 const nock = require('nock')
+require('should')
 
-const App = require('../index')
+const App = require('./index')
 const appTester = zapier.createAppTester(App)
 zapier.tools.env.inject()
 
@@ -12,9 +12,9 @@ describe('oauth2 app', () => {
     // It's a good idea to store your Client ID and Secret in the environment rather than in code.
     // This works locally via the `export` shell command and in production by using `zapier env`
     if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
-      throw new Error('For the tests to run, you need to do `export CLIENT_ID=1234 CLIENT_SECRET=asdf`');
+      throw new Error('For the tests to run, you need to do `export CLIENT_ID=1234 CLIENT_SECRET=asdf`')
     }
-  });
+  })
 
   it('generates an authorize URL', (done) => {
     const bundle = {
@@ -38,13 +38,13 @@ describe('oauth2 app', () => {
   it('can fetch an access token', (done) => {
     const bundle = {
       inputData: {
-        code: 'one_time_code',
+        code: 'one_time_code'
       },
       environment: {
         CLIENT_ID: process.env.CLIENT_ID,
         CLIENT_SECRET: process.env.CLIENT_SECRET
       }
-    };
+    }
     const accessToken = 'a_token'
     const refreshToken = 'refresh_token'
     nock('https://exist.io/oauth2')
@@ -75,7 +75,7 @@ describe('oauth2 app', () => {
       }
     }
     const accessToken = 'a_new_token'
-    const refreshToken = 'a_new_refresh_token' 
+    const refreshToken = 'a_new_refresh_token'
     nock('https://exist.io/oauth2')
       .post('/access_token')
       .reply(200, {
@@ -97,10 +97,10 @@ describe('oauth2 app', () => {
       authData: {
         access_token: 'a_token',
         refresh_token: 'a_refresh_token'
-      },
+      }
     }
     nock('https://exist.io/api')
-      .get('/1/users/\$self/today/')
+      .get('/1/users/$self/today/')
       .reply(200, {})
 
     appTester(App.authentication.test, bundle)

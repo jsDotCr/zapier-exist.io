@@ -8,7 +8,9 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive",
+    "test": "run-p validate lint mocha",
+    "mocha": "mocha",
+    "lint": "standard --fix",
     "validate": "zapier validate",
     "prerelease": "npm test && npm run validate",
     "release": "standard-version",
@@ -24,7 +26,9 @@
   "devDependencies": {
     "mocha": "3.2.0",
     "nock": "9.1.6",
+    "npm-run-all": "^4.1.2",
     "should": "11.2.1",
+    "standard": "^11.0.0",
     "standard-version": "4.3.0"
   }
 }
