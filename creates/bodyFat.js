@@ -1,6 +1,9 @@
 const { update } = require('./api')
 
 const createBodyFat = (z, bundle) => {
+  if (bundle.inputData.value >= 1 && bundle.inputData.value <= 100) {
+    bundle.inputData.value /= 100
+  }
   return update({
     name: 'body_fat',
     date: bundle.inputData.date,
