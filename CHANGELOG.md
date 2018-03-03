@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.0"></a>
+# 0.2.0 (2018-03-03)
+
+
+### Bug Fixes
+
+* update package description, zapier app infos ([e1f3b38](https://github.com/jsDotCr/zapier-exist.io/commit/e1f3b38))
+* update package metadata ([20316d0](https://github.com/jsDotCr/zapier-exist.io/commit/20316d0))
+* **api:** add more generic api update tests ([3083cd4](https://github.com/jsDotCr/zapier-exist.io/commit/3083cd4))
+* **api:** clean up attribute update api logic ([4629039](https://github.com/jsDotCr/zapier-exist.io/commit/4629039))
+* **api:** drying up api (post request object) ([98e9953](https://github.com/jsDotCr/zapier-exist.io/commit/98e9953))
+* **authentication:** share error logic ([7dd5ee6](https://github.com/jsDotCr/zapier-exist.io/commit/7dd5ee6))
+* **body fat:** update date input type ([6fa3f74](https://github.com/jsDotCr/zapier-exist.io/commit/6fa3f74))
+
+
+### Features
+
+* **authentication:** use exist API data, add tests ([8979bda](https://github.com/jsDotCr/zapier-exist.io/commit/8979bda))
+* **body fat:** add body fat create ([50dfe90](https://github.com/jsDotCr/zapier-exist.io/commit/50dfe90))
+* **env:** publish env variables from .environment file ([4f2f5c1](https://github.com/jsDotCr/zapier-exist.io/commit/4f2f5c1))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/jsDotCr/zapier-exist.io/compare/v0.1.1...v0.1.2) (2018-03-03)
 
