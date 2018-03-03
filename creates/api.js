@@ -11,7 +11,7 @@ function postRequestObject (url, body) {
       'Content-Type': 'application/json'
     },
     url: getApiUrl(url),
-    body: JSON.stringify(body)
+    body: JSON.stringify([body])
   }
 }
 
@@ -33,47 +33,52 @@ function isAttributeOwned (name, {
     })
 }
 
+function handleAttributeResponse (response, { action, name, z }) {
+  if (response.status >= 400) {
+    throw new Error(`Could not ${action} of attribute ${name} because ${response.content}`)
+  }
+  const content = z.JSON.parse(response.content)
+  if (response.status === 202) {
+    throw new Error(`Could not ${action} of attribute ${name} because ${content.failed[0].error}. Error code: ${content.failed[0].error_code}`)
+  }
+  return content.success[0]
+}
+
 function acquireAttribute (name, {
   z
 }) {
   return z.request(
-    postRequestObject('acquire', [{
+    postRequestObject('acquire', {
       name,
       active: true
-    }])
-  )
-    .then(response => {
-      if (response.status >= 400) {
-        throw new Error(`Could not acquire ownership of attribute ${name} because ${response.content}`)
-      }
-      const content = z.JSON.parse(response.content)
-      if (response.status === 202) {
-        throw new Error(`Could not acquire ownership of attribute ${name} because ${content.failed[0].error}. Error code: ${content.failed[0].error_code}`)
-      }
-      return content.success[0]
     })
+  )
+    .then(response =>
+      handleAttributeResponse(response, {
+        action: 'acquire ownership',
+        name,
+        z
+      })
+    )
 }
 
 function updateAttribute (name, date, value, {
   z
 }) {
   return z.request(
-    postRequestObject('update', [{
+    postRequestObject('update', {
       name,
       date,
       value
-    }])
-  )
-    .then(response => {
-      if (response.status >= 400) {
-        throw new Error(`Could not update attribute ${name} because ${response.content}`)
-      }
-      const content = z.JSON.parse(response.content)
-      if (response.status === 202) {
-        throw new Error(`Could not update attribute ${name} because ${content.failed[0].error}. Error code: ${content.failed[0].error_code}`)
-      }
-      return content.success[0]
     })
+  )
+    .then(response =>
+      handleAttributeResponse(response, {
+        action: 'update',
+        name,
+        z
+      })
+    )
 }
 
 exports.update = function updateAttributeChain ({

@@ -1,7 +1,8 @@
-function handleFetchAccessTokenError (status, content) {
-  if (status !== 200) {
-    throw new Error('Unable to fetch access token: ' + content)
+function handleFetchAccessToken (response) {
+  if (response.status !== 200) {
+    throw new Error('Unable to fetch access token: ' + response.content)
   }
+  return JSON.parse(response.content)
 }
 
 const getAccessToken = (z, bundle) => {
@@ -19,10 +20,7 @@ const getAccessToken = (z, bundle) => {
     }
   })
 
-  return promise.then((response) => {
-    handleFetchAccessTokenError(response.status, response.content)
-    return JSON.parse(response.content)
-  })
+  return promise.then(handleFetchAccessToken)
 }
 
 const refreshAccessToken = (z, bundle) => {
@@ -39,10 +37,7 @@ const refreshAccessToken = (z, bundle) => {
     }
   })
 
-  return promise.then((response) => {
-    handleFetchAccessTokenError(response.status, response.content)
-    return JSON.parse(response.content)
-  })
+  return promise.then(handleFetchAccessToken)
 }
 
 const testAuth = (z) => {
