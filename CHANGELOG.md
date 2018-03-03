@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.2"></a>
+## [0.1.2](https://github.com/jsDotCr/zapier-exist.io/compare/v0.1.1...v0.1.2) (2018-03-03)
+
+
+### Bug Fixes
+
+* **api:** drying up api (post request object) ([5040c68](https://github.com/jsDotCr/zapier-exist.io/commit/5040c68))
+* **authentication:** share error logic ([a1242e6](https://github.com/jsDotCr/zapier-exist.io/commit/a1242e6))
+* **body fat:** update date input type ([7d1c7b4](https://github.com/jsDotCr/zapier-exist.io/commit/7d1c7b4))
+
+
+
 <a name="0.1.1"></a>
 ## [0.1.1](https://github.com/jsDotCr/zapier-exist.io/compare/v0.1.0...v0.1.1) (2018-03-03)
 
