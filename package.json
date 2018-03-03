@@ -23,6 +23,7 @@
     "npm": ">=3.10.10"
   },
   "dependencies": {
+    "luxon": "^0.5.3",
     "zapier-platform-core": "5.0.0"
   },
   "devDependencies": {

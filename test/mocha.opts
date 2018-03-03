@@ -1,3 +1,4 @@
 --recursive
 *.test.js
 creates/**/*.test.js
+normalizers/**/*.test.js

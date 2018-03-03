@@ -1,13 +1,21 @@
 const { update } = require('./api')
+const dateNormalizer = require('../normalizers/date')
+const percentNormalizer = require('../normalizers/percent')
 
 const createBodyFat = (z, bundle) => {
-  if (bundle.inputData.value >= 1 && bundle.inputData.value <= 100) {
-    bundle.inputData.value /= 100
-  }
+  const name = 'body_fat'
+  const value = percentNormalizer(bundle.inputData.value, {
+    name,
+    key: 'value'
+  })
+  const date = dateNormalizer(bundle.inputData.date, {
+    name,
+    key: 'date'
+  })
   return update({
-    name: 'body_fat',
-    date: bundle.inputData.date,
-    value: bundle.inputData.value,
+    name,
+    date,
+    value,
     z,
     bundle
   })
@@ -36,7 +44,7 @@ module.exports = {
         key: 'value',
         type: 'number',
         label: 'Measurement',
-        helpText: 'Body fat % - Decimals allowed, using dot notation',
+        helpText: 'Body fat % - Decimals allowed',
         placeholder: '15.4',
         required: true
       }
