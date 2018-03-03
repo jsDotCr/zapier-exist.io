@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/jsDotCr/zapier-exist.io/compare/v0.2.1...v0.3.0) (2018-03-03)
+
+
+### Features
+
+* add date and percent input normalizers/checkers ([ad61a9e](https://github.com/jsDotCr/zapier-exist.io/commit/ad61a9e))
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/jsDotCr/zapier-exist.io/compare/v0.2.0...v0.2.1) (2018-03-03)
 
