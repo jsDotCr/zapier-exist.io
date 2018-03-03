@@ -6,7 +6,7 @@ const createBodyFat = (z, bundle) => {
     date: bundle.inputData.date,
     value: bundle.inputData.value,
     z,
-    bundle,
+    bundle
   })
 }
 
@@ -15,8 +15,8 @@ module.exports = {
   noun: 'Body Fat',
 
   display: {
-    label: 'Add body fat measurement',
-    description: 'Adds a body fat attribute\'s value for a given day.',
+    label: 'Add Body Fat Measurement',
+    description: 'Adds a body fat attribute\'s value for a given day.'
   },
 
   operation: {
@@ -27,7 +27,7 @@ module.exports = {
         helpText: 'Measurement date using the format "YYYY-MM-DD"',
         placeholder: '2018-02-17',
         type: 'datetime',
-        required: true,
+        required: true
       },
       {
         key: 'value',
@@ -35,28 +35,28 @@ module.exports = {
         label: 'Measurement',
         helpText: 'Body fat % - Decimals allowed, using dot notation',
         placeholder: '15.4',
-        required: true,
+        required: true
       }
     ],
     perform: createBodyFat,
     sample: {
       name: 'body_fat',
       date: '2018-02-17',
-      value: '15.4',
+      value: '15.4'
     },
     outputFields: [
       {
         key: 'name',
-        label: 'Attribute name',
+        label: 'Attribute name'
       },
       {
         key: 'date',
-        label: 'Measurement date',
+        label: 'Measurement date'
       },
       {
         key: 'value',
-        label: 'Attribute value',
-      },
-    ],
-  },
+        label: 'Attribute value'
+      }
+    ]
+  }
 }
