@@ -1,6 +1,10 @@
+const joi = require('joi')
 const { DateTime } = require('luxon')
 
-function date (value, { name = 'unknown', key = 'unknown' } = {}) {
+const schema = joi.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'iso date').required()
+const sample = '2018-02-17'
+
+function dateNormalizer (value, { name = 'unknown', key = 'date' } = {}) {
   let isoDate = DateTime.fromISO(value, { setZone: true })
   if (Number.isInteger(value) && !isoDate.isValid) {
     isoDate = DateTime.fromMillis(value, { setZone: true })
@@ -8,10 +12,16 @@ function date (value, { name = 'unknown', key = 'unknown' } = {}) {
   if (!isoDate.isValid) {
     isoDate = DateTime.fromRFC2822(String(value), { setZone: true })
   }
-  if (!isoDate.isValid) {
-    throw new Error(`${name}: could not recognize the date ${value} for ${key}. Please use an ISO string or an RFC2822-compliant string`)
-  }
-  return isoDate.toISODate()
+  return joi.attempt(isoDate.toISODate(), schema)
 }
 
-module.exports = date
+exports.normalizer = dateNormalizer
+exports.inputField = {
+  key: 'date',
+  label: 'Date',
+  helpText: 'Measurement date (can also be a full ISO date(time), an RFC2822-compliant string, or a Unix timestamp: it will be converted in exist.io\'s format "YYYY-MM-DD" for you)',
+  placeholder: sample,
+  type: 'string',
+  required: true
+}
+exports.sample = sample

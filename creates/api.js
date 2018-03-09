@@ -92,3 +92,18 @@ exports.update = function updateAttributeChain ({
     .catch(() => acquireAttribute(name, { z }))
     .then(() => updateAttribute(name, date, value, { z }))
 }
+
+exports.outputFields = [
+  {
+    key: 'name',
+    label: 'Attribute name'
+  },
+  {
+    key: 'date',
+    label: 'Measurement date'
+  },
+  {
+    key: 'value',
+    label: 'Attribute value'
+  }
+]

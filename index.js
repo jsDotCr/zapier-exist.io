@@ -1,5 +1,8 @@
 const authentication = require('./authentication')
 const BodyFatCreate = require('./creates/bodyFat')
+const HeartRateCreate = require('./creates/heartRate')
+const MeditationCreate = require('./creates/meditation')
+const WeightCreate = require('./creates/weight')
 
 const includeBearerToken = (request, z, bundle) => {
   if (bundle.authData.access_token) {
@@ -11,27 +14,19 @@ const includeBearerToken = (request, z, bundle) => {
 const App = {
   version: require('./package.json').version,
   platformVersion: require('zapier-platform-core').version,
-
   authentication: authentication,
-
   beforeRequest: [
     includeBearerToken
   ],
-
-  afterResponse: [
-  ],
-
-  resources: {
-  },
-
-  triggers: {
-  },
-
-  searches: {
-  },
-
+  afterResponse: [],
+  resources: {},
+  triggers: {},
+  searches: {},
   creates: {
-    [BodyFatCreate.key]: BodyFatCreate
+    [BodyFatCreate.key]: BodyFatCreate,
+    [HeartRateCreate.key]: HeartRateCreate,
+    [MeditationCreate.key]: MeditationCreate,
+    [WeightCreate.key]: WeightCreate
   }
 }
 

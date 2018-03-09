@@ -1,15 +1,25 @@
-function percent (value, { name = 'unknown', key = 'unknown' } = {}) {
-  if (typeof (value) === 'string' && value.includes(',')) {
-    value = value.replace(',', '.')
+// Exist.io API Reference: attribute value type 5
+const joi = require('joi')
+const { toNumber, validate } = require('./toNumber')
+
+const schema = joi.number().greater(0).less(1).required()
+const sample = '15.4'
+
+function percentNormalizer (value, schemaExtras) {
+  let inputValue = toNumber(value)
+  if (inputValue >= 1) {
+    inputValue = inputValue / 100
   }
-  const inputValue = Number(value)
-  if (inputValue > 0 && inputValue < 1) {
-    return inputValue
-  }
-  if (inputValue >= 1 && inputValue < 100) {
-    return inputValue / 100
-  }
-  throw new Error(`${name}: invalid value (${value}) for ${key}. It is supposed to be a percent-like value. A valid value is a number between 1 (included) and 100 (excluded), or 0.01 (included) and 1 (excluded); decimals are allowed (no matter which separator you use)`)
+  return validate(inputValue, schema, schemaExtras)
 }
 
-module.exports = percent
+exports.normalizer = percentNormalizer
+exports.inputField = {
+  key: 'value',
+  type: 'number',
+  label: 'Measurement value',
+  helpText: 'Percentage - Decimals allowed',
+  placeholder: sample,
+  required: true
+}
+exports.sample = sample

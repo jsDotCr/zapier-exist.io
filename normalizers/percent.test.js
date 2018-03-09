@@ -1,11 +1,11 @@
 /* globals describe, it */
 const should = require('should')
-const percent = require('./percent')
+const { normalizer: percent } = require('./percent')
 
 describe('Percent normalizer', () => {
   describe('numbers between 0 and 1', () => {
     it('fails with 0', () => {
-      should.throws(() => percent('0'), /invalid value/)
+      should.throws(() => percent('0'), /ValidationError/)
     })
     it('leaves 0 < n < 1 unchanged', () => {
       percent('0.5').should.equal(0.5)
@@ -16,14 +16,17 @@ describe('Percent normalizer', () => {
     it('divides 1 by 100', () => {
       percent('1').should.equal(0.01)
     })
+    it('accepts a string with the percent sign', () => {
+      percent('18.5%').should.equal(0.185)
+    })
     it('divides 99 by 100', () => {
       percent('99').should.equal(0.99)
     })
     it('fails with 100', () => {
-      should.throws(() => percent('100'), /invalid value/)
+      should.throws(() => percent('100'), /ValidationError/)
     })
     it('fails with a number > 100', () => {
-      should.throws(() => percent('875'), /invalid value/)
+      should.throws(() => percent('875'), /ValidationError/)
     })
   })
   describe('decimal separator', () => {

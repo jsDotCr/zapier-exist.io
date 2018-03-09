@@ -1,7 +1,7 @@
 /* globals describe, it */
-require('should')
+const should = require('should')
 const { DateTime } = require('luxon')
-const date = require('./date')
+const { normalizer: date } = require('./date')
 
 describe('Date normalizer', () => {
   it('accepts a full ISO string', () => {
@@ -15,5 +15,14 @@ describe('Date normalizer', () => {
   })
   it('accepts a timestamp', () => {
     date(+new Date()).should.equal(DateTime.fromJSDate(new Date()).toISODate())
+  })
+  it('fails with a null input', () => {
+    should.throws(() => date(null), /ValidationError/)
+  })
+  it('fails with an empty input', () => {
+    should.throws(() => date(), /ValidationError/)
+  })
+  it('fails with an invalid date-like input', () => {
+    should.throws(() => date('15/3/2019'), /ValidationError/)
   })
 })
