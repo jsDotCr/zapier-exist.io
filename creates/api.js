@@ -1,3 +1,4 @@
+const NO_ATTRIBUTE_OWNERSHIP = 'NO_ATTRIBUTE_OWNERSHIP'
 const apiRoot = 'https://exist.io/api/1/attributes'
 
 function getApiUrl (method) {
@@ -15,6 +16,32 @@ function postRequestObject (url, body) {
   }
 }
 
+function throwError ({ message, status, errorCode }) {
+  const e = new Error(message)
+  e.errorCode = errorCode
+  e.status = status
+  throw e
+}
+
+function handleAttributeResponse (response, { action, name, z }) {
+  let content
+  if (response.status >= 400) {
+    return throwError({
+      message: `Could not ${action} of attribute ${name} because ${response.content}`,
+      status: response.status
+    })
+  }
+  content = z.JSON.parse(response.content)
+  if (response.status === 202 || (content.failed && content.failed.length > 0)) {
+    return throwError({
+      message: `Could not ${action} of attribute ${name} because ${content.failed[0].error}`,
+      status: response.status,
+      errorCode: content.failed[0].error_code
+    })
+  }
+  return content
+}
+
 function isAttributeOwned (name, {
   z
 }) {
@@ -22,26 +49,22 @@ function isAttributeOwned (name, {
     method: 'GET',
     url: getApiUrl('owned')
   })
-    .then(response => z.JSON.parse(response.content))
-    .then(attributesOwned => {
-      const attribute = attributesOwned.filter(({ attribute }) =>
-        attribute === name)
-      if (attribute.length === 1) {
+    .then(response => {
+      const content = handleAttributeResponse(response, {
+        action: 'check ownership',
+        name,
+        z
+      })
+      const attribute = content
+        .find(({ attribute }) => attribute === name)
+      if (attribute) {
         return attribute
       }
-      throw new Error(`We don't have ownership of ${name}`)
+      return throwError({
+        message: `We don't have ownership of ${name}`,
+        status: NO_ATTRIBUTE_OWNERSHIP
+      })
     })
-}
-
-function handleAttributeResponse (response, { action, name, z }) {
-  if (response.status >= 400) {
-    throw new Error(`Could not ${action} of attribute ${name} because ${response.content}`)
-  }
-  const content = z.JSON.parse(response.content)
-  if (response.status === 202) {
-    throw new Error(`Could not ${action} of attribute ${name} because ${content.failed[0].error}. Error code: ${content.failed[0].error_code}`)
-  }
-  return content.success[0]
 }
 
 function acquireAttribute (name, {
@@ -58,7 +81,7 @@ function acquireAttribute (name, {
         action: 'acquire ownership',
         name,
         z
-      })
+      }).success[0]
     )
 }
 
@@ -77,7 +100,7 @@ function updateAttribute (name, date, value, {
         action: 'update',
         name,
         z
-      })
+      }).success[0]
     )
 }
 
@@ -89,7 +112,12 @@ exports.update = function updateAttributeChain ({
   bundle
 }) {
   return isAttributeOwned(name, { z })
-    .catch(() => acquireAttribute(name, { z }))
+    .catch((e) => {
+      if (e.status === 202 || e.status === NO_ATTRIBUTE_OWNERSHIP) {
+        return acquireAttribute(name, { z })
+      }
+      throw e
+    })
     .then(() => updateAttribute(name, date, value, { z }))
 }
 
