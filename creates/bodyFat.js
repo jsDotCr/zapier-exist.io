@@ -19,8 +19,7 @@ const createBodyFat = (z, bundle) => {
     name,
     date,
     value,
-    z,
-    bundle
+    z
   })
 }
 

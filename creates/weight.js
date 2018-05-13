@@ -19,8 +19,7 @@ const createWeight = (z, bundle) => {
     name,
     date,
     value,
-    z,
-    bundle
+    z
   })
 }
 
