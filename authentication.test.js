@@ -29,7 +29,7 @@ describe('oauth2 app', () => {
 
     appTester(App.authentication.oauth2Config.authorizeUrl, bundle)
       .then((authorizeUrl) => {
-        authorizeUrl.should.equal(`https://exist.io/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code&scope=read%2Bwrite`)
+        authorizeUrl.should.equal(`https://exist.io/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code&scope=read%2Bwrite%2Bappend`)
         done()
       })
       .catch(done)

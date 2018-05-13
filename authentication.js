@@ -63,7 +63,7 @@ module.exports = {
         client_id: '{{process.env.CLIENT_ID}}',
         redirect_uri: '{{bundle.inputData.redirect_uri}}',
         response_type: 'code',
-        scope: 'read+write'
+        scope: 'read+write+append'
       }
     },
     getAccessToken: getAccessToken,
