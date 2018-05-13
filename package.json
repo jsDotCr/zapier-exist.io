@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "joi": "^13.3.0",
+    "lodash.snakecase": "^4.1.1",
     "luxon": "^1.2.0",
     "zapier-platform-core": "6.0.0"
   },

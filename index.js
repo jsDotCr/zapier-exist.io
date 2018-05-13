@@ -1,5 +1,6 @@
 const authentication = require('./authentication')
 const BodyFatCreate = require('./creates/bodyFat')
+const CustomTagCreate = require('./creates/customTag')
 const HeartRateCreate = require('./creates/heartRate')
 const MeditationCreate = require('./creates/meditation')
 const WeightCreate = require('./creates/weight')
@@ -26,7 +27,8 @@ const App = {
     [BodyFatCreate.key]: BodyFatCreate,
     [HeartRateCreate.key]: HeartRateCreate,
     [MeditationCreate.key]: MeditationCreate,
-    [WeightCreate.key]: WeightCreate
+    [WeightCreate.key]: WeightCreate,
+    [CustomTagCreate.key]: CustomTagCreate
   }
 }
 

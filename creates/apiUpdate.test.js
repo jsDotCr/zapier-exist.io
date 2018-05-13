@@ -5,29 +5,31 @@ const zapier = require('zapier-platform-core')
 require('should')
 
 const App = require('../index')
+const { operations, operationToHumanReadableAction } = require('./api')
 const appTester = zapier.createAppTester(App)
 let http
 
 zapier.tools.env.inject()
 
-describe('API attribute update', function () {
-  beforeEach('beforeEach API attribute update', function () {
-    http = nock('https://exist.io/api')
-      .defaultReplyHeaders({
-        'Content-Type': 'application/json'
-      })
-      .replyContentLength()
-  })
-  afterEach('afterEach API attribute update', function () {
-    nock.cleanAll()
-    http = undefined
-  })
-  const bundle = {
-    inputData: {
-      date: DateTime.fromJSDate(new Date()).toISODate(),
-      value: '1'
-    }
+beforeEach('beforeEach API attribute update', function () {
+  http = nock('https://exist.io/api')
+    .defaultReplyHeaders({
+      'Content-Type': 'application/json'
+    })
+    .replyContentLength()
+})
+afterEach('afterEach API attribute update', function () {
+  nock.cleanAll()
+  http = undefined
+})
+const bundle = {
+  inputData: {
+    date: DateTime.fromJSDate(new Date()).toISODate(),
+    value: '1'
   }
+}
+
+describe('API attribute update', function () {
   describe('isAttributeOwned errors', function () {
     const statusCode = 504
     beforeEach('/owned errors', function () {
@@ -57,6 +59,13 @@ describe('API attribute update', function () {
     })
   })
   describe('attribute to update is not owned', function () {
+    const customBundle = Object.assign({}, bundle, {
+      inputData: Object.assign({}, bundle.inputData, {
+        name: 'body_fat',
+        date: '2015-05-20',
+        value: 20
+      })
+    })
     beforeEach('/owned succeeds with empty response', function () {
       http
         .get('/1/attributes/owned/')
@@ -75,7 +84,7 @@ describe('API attribute update', function () {
           ]
         })
 
-      appTester(App.creates.body_fat.operation.perform, bundle)
+      appTester(App.creates.body_fat.operation.perform, customBundle)
         .catch(result => {
           result.should.be.an.instanceof(Error)
             .and.have.property('errorCode').eql(errorCode)
@@ -91,7 +100,7 @@ describe('API attribute update', function () {
         .reply(200, {
           success: [
             {
-              name: 'body_fat',
+              name: customBundle.inputData.name,
               active: true
             }
           ],
@@ -102,8 +111,8 @@ describe('API attribute update', function () {
           success: [],
           failed: [
             {
-              name: 'body_fat',
-              date: '2015-05-20',
+              name: customBundle.inputData.name,
+              date: customBundle.inputData.date,
               error_code: errorCode,
               error
             }
@@ -120,16 +129,16 @@ describe('API attribute update', function () {
     })
     it('succeeds if attribute update succeeds', function (done) {
       const returningObject = {
-        name: 'body_fat',
-        date: '2015-05-20',
-        value: 'Great day playing with the Exist API'
+        name: customBundle.inputData.name,
+        date: customBundle.inputData.date,
+        value: customBundle.inputData.value
       }
       http
         .post('/1/attributes/acquire/')
         .reply(200, {
           success: [
             {
-              name: 'body_fat',
+              name: customBundle.inputData.name,
               active: true
             }
           ],
@@ -153,6 +162,11 @@ describe('API attribute update', function () {
   })
   describe('attribute to update is already owned', function () {
     const attribute = 'meditation_min'
+    const customBundle = Object.assign({}, bundle, {
+      inputData: Object.assign({}, bundle.inputData, {
+        name: attribute
+      })
+    })
     beforeEach('/owned succeeds with owned attribute', function () {
       http
         .get('/1/attributes/owned/')
@@ -171,9 +185,9 @@ describe('API attribute update', function () {
     })
     it('does not call the /acquire endpoint, just the /update one', function (done) {
       const returningObject = {
-        name: attribute,
-        date: '2015-05-20',
-        value: 'Great day playing with the Exist API'
+        name: customBundle.inputData.name,
+        date: customBundle.inputData.date,
+        value: customBundle.inputData.value
       }
       http
         .post('/1/attributes/update/')
@@ -183,7 +197,7 @@ describe('API attribute update', function () {
           ],
           failed: []
         })
-      appTester(App.creates[attribute].operation.perform, bundle)
+      appTester(App.creates[attribute].operation.perform, customBundle)
         .then(result => {
           result.should.eql(returningObject)
           http.done()
@@ -191,5 +205,97 @@ describe('API attribute update', function () {
         })
         .catch(done)
     })
+  })
+})
+describe('append tag', function () {
+  const attribute = 'custom_tag'
+  const customBundle = Object.assign({}, bundle, {
+    inputData: Object.assign({}, bundle.inputData, {
+      value: 'new_custom_tag'
+    })
+  })
+  it('does not call the update endpoint', function (done) {
+    http
+      .post('/1/attributes/update/')
+      .reply(200, {
+        success: [
+          customBundle.inputData
+        ],
+        failed: []
+      })
+    appTester(App.creates[attribute].operation.perform, customBundle)
+      .then(result => {
+        done(new Error('should have NOT called "/attributes/update/" endpoint!'))
+      })
+      .catch(e => done())
+  })
+  it('calls the custom/append endpoint', function (done) {
+    http
+      .post('/1/attributes/custom/append/')
+      .reply(200, {
+        success: [
+          customBundle.inputData
+        ],
+        failed: []
+      })
+    appTester(App.creates[attribute].operation.perform, customBundle)
+      .then(result => {
+        http.done()
+        done()
+      })
+      .catch(done)
+  })
+  it('returns the validated input values back', function (done) {
+    const customBundle = Object.assign({}, bundle, {
+      inputData: Object.assign({}, bundle.inputData, {
+        value: 'New custom tag!'
+      })
+    })
+    const validatedCustomBundle = Object.assign({}, bundle, {
+      inputData: Object.assign({}, bundle.inputData, {
+        value: 'new_custom_tag'
+      })
+    })
+    http
+      .post('/1/attributes/custom/append/', ([ { value } ]) => value === validatedCustomBundle.inputData.value)
+      .reply(200, {
+        success: [
+          validatedCustomBundle.inputData
+        ],
+        failed: []
+      })
+    appTester(App.creates[attribute].operation.perform, customBundle)
+      .then(result => {
+        result.should.eql(validatedCustomBundle.inputData)
+        done()
+      })
+      .catch(done)
+  })
+  it('handles update failure', function (done) {
+    const customBundle = Object.assign({}, bundle, {
+      inputData: Object.assign({}, bundle.inputData, {
+        value: 'new_custom_tag'
+      })
+    })
+    http
+      .post('/1/attributes/custom/append/')
+      .reply(202, {
+        success: [],
+        failed: [
+          Object.assign({}, customBundle.inputData, {
+            error: 'something',
+            error_code: 42
+          })
+        ]
+      })
+    appTester(App.creates[attribute].operation.perform, customBundle)
+      .then(result => {
+        done(new Error('Should not be here!'))
+      })
+      .catch(e => {
+        const errorMessage = operationToHumanReadableAction(operations.ATTRIBUTE_APPEND)
+        e.message.should.match(new RegExp(errorMessage))
+        done()
+      })
   })
 })

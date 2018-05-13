@@ -1,17 +1,34 @@
 const NO_ATTRIBUTE_OWNERSHIP = 'NO_ATTRIBUTE_OWNERSHIP'
+const ATTRIBUTE_CREATE = 'ATTRIBUTE_CREATE'
+const ATTRIBUTE_APPEND = 'ATTRIBUTE_APPEND'
+const ATTRIBUTE_OWNERSHIP_CHECK = 'ATTRIBUTE_OWNERSHIP_CHECK'
+const ATTRIBUTE_OWNERSHIP_ACQUIRE = 'ATTRIBUTE_OWNERSHIP_ACQUIRE'
 const apiRoot = 'https://exist.io/api/1/attributes'
 
-function getApiUrl (method) {
-  return `${apiRoot}/${method}/`
+const operations = {
+  ATTRIBUTE_APPEND,
+  ATTRIBUTE_CREATE,
+  ATTRIBUTE_OWNERSHIP_CHECK,
+  ATTRIBUTE_OWNERSHIP_ACQUIRE
 }
 
-function postRequestObject (url, body) {
+function getApiUrl (operation) {
+  const operationToUrl = {
+    ATTRIBUTE_OWNERSHIP_CHECK: 'owned',
+    ATTRIBUTE_OWNERSHIP_ACQUIRE: 'acquire',
+    ATTRIBUTE_CREATE: 'update',
+    ATTRIBUTE_APPEND: 'custom/append'
+  }
+  return `${apiRoot}/${operationToUrl[operation]}/`
+}
+
+function postRequestObject (operation, body) {
   return {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    url: getApiUrl(url),
+    url: getApiUrl(operation),
     body: JSON.stringify([body])
   }
 }
@@ -23,18 +40,29 @@ function throwError ({ message, status, errorCode }) {
   throw e
 }
 
-function handleAttributeResponse (response, { action, name, z }) {
+function operationToHumanReadableAction (operation, name) {
+  const ops = {
+    ATTRIBUTE_OWNERSHIP_ACQUIRE: `acquire ownership for attribute ${name}`,
+    ATTRIBUTE_OWNERSHIP_CHECK: `check for ownership for attribute ${name}`,
+    ATTRIBUTE_APPEND: `append custom tag`,
+    ATTRIBUTE_CREATE: `create new value for attribute ${name}`
+  }
+  return ops[operation] || `do "${operation}"`
+}
+
+function handleAttributeResponse (response, { operation, name, z }) {
+  const action = operationToHumanReadableAction(operation, name)
   let content
   if (response.status >= 400) {
     return throwError({
-      message: `Could not ${action} of attribute ${name} because ${response.content}`,
+      message: `Could not ${action} because ${response.content}`,
       status: response.status
     })
   }
   content = z.JSON.parse(response.content)
-  if (response.status === 202 || (content.failed && content.failed.length > 0)) {
+  if (content.failed && content.failed.length > 0) {
     return throwError({
-      message: `Could not ${action} of attribute ${name} because ${content.failed[0].error}`,
+      message: `Could not ${action} because ${content.failed[0].error}`,
       status: response.status,
       errorCode: content.failed[0].error_code
     })
@@ -47,11 +75,11 @@ function isAttributeOwned (name, {
 }) {
   return z.request({
     method: 'GET',
-    url: getApiUrl('owned')
+    url: getApiUrl(ATTRIBUTE_OWNERSHIP_CHECK)
   })
     .then(response => {
       const content = handleAttributeResponse(response, {
-        action: 'check ownership',
+        operation: ATTRIBUTE_OWNERSHIP_CHECK,
         name,
         z
       })
@@ -71,34 +99,32 @@ function acquireAttribute (name, {
   z
 }) {
   return z.request(
-    postRequestObject('acquire', {
+    postRequestObject(ATTRIBUTE_OWNERSHIP_ACQUIRE, {
       name,
       active: true
     })
   )
     .then(response =>
       handleAttributeResponse(response, {
-        action: 'acquire ownership',
+        operation: ATTRIBUTE_OWNERSHIP_ACQUIRE,
         name,
         z
       }).success[0]
     )
 }
 
-function updateAttribute (name, date, value, {
-  z
+function updateAttribute ({
+  payload,
+  z,
+  operation
 }) {
   return z.request(
-    postRequestObject('update', {
-      name,
-      date,
-      value
-    })
+    postRequestObject(operation, payload)
   )
     .then(response =>
       handleAttributeResponse(response, {
-        action: 'update',
-        name,
+        operation,
+        name: payload.name || '',
         z
       }).success[0]
     )
@@ -108,8 +134,7 @@ exports.update = function updateAttributeChain ({
   name,
   date,
   value,
-  z,
-  bundle
+  z
 }) {
   return isAttributeOwned(name, { z })
     .catch((e) => {
@@ -118,7 +143,30 @@ exports.update = function updateAttributeChain ({
       }
       throw e
     })
-    .then(() => updateAttribute(name, date, value, { z }))
+    .then(() => updateAttribute({
+      payload: {
+        name,
+        date,
+        value
+      },
+      operation: ATTRIBUTE_CREATE,
+      z
+    }))
+}
+
+exports.append = function appendAttributeChain ({
+  date,
+  value,
+  z
+}) {
+  return updateAttribute({
+    payload: {
+      date,
+      value
+    },
+    operation: ATTRIBUTE_APPEND,
+    z
+  })
 }
 
 exports.outputFields = [
@@ -135,3 +183,15 @@ exports.outputFields = [
     label: 'Attribute value'
   }
 ]
+exports.tagOutputFields = [
+  {
+    key: 'date',
+    label: 'Date'
+  },
+  {
+    key: 'value',
+    label: 'Name of the tag'
+  }
+]
+exports.operationToHumanReadableAction = operationToHumanReadableAction
+exports.operations = operations
