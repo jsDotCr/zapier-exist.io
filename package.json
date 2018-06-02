@@ -16,7 +16,7 @@
     "validate": "zapier validate",
     "prerelease": "npm test",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags origin master && zapier push"
+    "postrelease": "git push --follow-tags origin master && zapier push && node ./publish-env.js"
   },
   "engines": {
     "node": "8.10.0",
