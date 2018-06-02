@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/jsDotCr/zapier-exist.io/compare/v0.4.1...v0.5.0) (2018-06-02)
+
+
+### Bug Fixes
+
+* clean up update arguments ([28c43fb](https://github.com/jsDotCr/zapier-exist.io/commit/28c43fb))
+
+
+### Features
+
+* **api:** add append scope ([b350477](https://github.com/jsDotCr/zapier-exist.io/commit/b350477))
+* **custom tag:** include new custom tag create action ([d6d95dc](https://github.com/jsDotCr/zapier-exist.io/commit/d6d95dc))
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/jsDotCr/zapier-exist.io/compare/v0.4.0...v0.4.1) (2018-03-11)
 
